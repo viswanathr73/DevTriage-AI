@@ -5,6 +5,7 @@ export default function Tickets() {
   const [form, setForm] = useState({ title: "", description: "" });
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true); // new
 
   const token = localStorage.getItem("token");
 
@@ -15,9 +16,11 @@ export default function Tickets() {
         method: "GET",
       });
       const data = await res.json();
-      setTickets(data.tickets || []);
+      setTickets(data.tickets || []); // stays the same
     } catch (err) {
       console.error("Failed to fetch tickets:", err);
+    } finally {
+      setFetching(false);
     }
   };
 
@@ -32,6 +35,7 @@ export default function Tickets() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     try {
       const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/tickets`, {
         method: "POST",
@@ -62,6 +66,7 @@ export default function Tickets() {
     <div className="p-4 max-w-3xl mx-auto">
       <h2 className="text-2xl font-bold mb-4">Create Ticket</h2>
 
+      {/* FORM */}
       <form onSubmit={handleSubmit} className="space-y-3 mb-8">
         <input
           name="title"
@@ -84,12 +89,16 @@ export default function Tickets() {
         </button>
       </form>
 
+      {/* TICKETS SECTION */}
       <h2 className="text-xl font-semibold mb-2">All Tickets</h2>
+
+      {fetching && <p className="text-gray-400">Loading tickets...</p>}
+
       <div className="space-y-3">
         {tickets.map((ticket) => (
           <Link
             key={ticket._id}
-            className="card shadow-md p-4 bg-gray-800"
+            className="card shadow-md p-4 "
             to={`/tickets/${ticket._id}`}
           >
             <h3 className="font-bold text-lg">{ticket.title}</h3>
@@ -99,7 +108,8 @@ export default function Tickets() {
             </p>
           </Link>
         ))}
-        {tickets.length === 0 && <p>No tickets submitted yet.</p>}
+
+        {!fetching && tickets.length === 0 && <p>No tickets submitted yet.</p>}
       </div>
     </div>
   );

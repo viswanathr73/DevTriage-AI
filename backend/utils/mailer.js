@@ -1,30 +1,28 @@
-import nodemailer from "nodemailer"
 
-export const sendMail = async (to, subject, text) => {
-    try {
-        const transporter = nodemailer.createTransport({
-            host: process.env.MAILTRAP_SMTP_HOST,
-            port: process.env.MAILTRAP_SMTP_PORT,
-            secure: false, // true for 465, false for other ports
-            auth: {
-                user: process.env.MAILTRAP_SMTP_USER,
-                pass: process.env.MAILTRAP_SMTP_PASS,
-            },
-        });
+import nodemailer from "nodemailer";
 
-        const info = await transporter.sendMail({
-            from: '"Inngest TMS',
-            to,
-            subject,
-            text,
-        });
+export const sendMail = async ({ to, subject, text }) => {
+  try {
+    const transporter = nodemailer.createTransport({
+      host: process.env.MAILTRAP_SMTP_HOST,
+      port: parseInt(process.env.MAILTRAP_SMTP_PORT),
+      auth: {
+        user: process.env.MAILTRAP_SMTP_USER,
+        pass: process.env.MAILTRAP_SMTP_PASS,
+      },
+    });
 
-        console.log("Message sent:", info.messageId);
-        return info;
+    const info = await transporter.sendMail({
+      from: '"DevTriage AI" <no-reply@devtriage.ai>',
+      to: to,
+      subject,
+      text,
+    });
 
-
-    } catch (error) {
-        console.error("Mail error", error.message);
-        throw error;
-    }
+    console.log("📩 Email sent successfully:", info.messageId);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error("📩 Email failed:", error.message);
+    return { success: false, error: error.message };
+  }
 };
