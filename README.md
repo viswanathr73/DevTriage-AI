@@ -63,7 +63,7 @@ It bridges the gap between **struggling developers** and **experienced mentors**
 ---
 
 ##  Project Structure
-
+```
 devtriage-ai/
     ├── backend/
     │   ├── index.js
@@ -111,6 +111,7 @@ devtriage-ai/
                 ├── signup.jsx
                 ├── ticket.jsx
                 └── tickets.jsx
+```
 
 ##  .env Configuration
 
